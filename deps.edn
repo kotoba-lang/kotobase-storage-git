@@ -1,0 +1,14 @@
+{:paths ["src"]
+ ;; git 本体以外に依存を持たない。ブロックも ref も git plumbing だけで表現でき、
+ ;; JDBC ドライバや SDK に相当するものが要らない — これは git backend の性質。
+ :deps {io.github.kotoba-lang/kotobase-storage
+        {:local/root "../kotobase-storage"}}
+ :aliases
+ {:test
+  {:extra-paths ["test"]
+   :extra-deps
+   {io.github.kotoba-lang/kotobase-engine
+    {:local/root "../kotobase-engine"}
+    io.github.cognitect-labs/test-runner
+    {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+   :main-opts ["-m" "cognitect.test-runner"]}}}
