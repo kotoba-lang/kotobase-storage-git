@@ -30,11 +30,18 @@
   (with-repo
     (fn [path]
       (let [checks (atom [])
-            backend (git/open {:path path})]
-        (contract/verify backend (fn [truthy label]
-                                   (swap! checks conj label)
-                                   (is truthy label)))
-        (is (= 8 (count @checks)))))))
+            backend (git/open {:path path})
+            result (contract/verify backend (fn [truthy label]
+                                              (swap! checks conj label)
+                                              (is truthy label)))]
+        ;; Assert what ran, not how many. A count is the wrong thing to
+        ;; pin: it made adding the concurrent half look like a failure
+        ;; here, and it would have gone on reporting success if the half
+        ;; were ever skipped for this backend.
+        (is (= {:profile :linearizable-ref :concurrency :verified} result)
+            "the suite raced this backend rather than skipping it")
+        (is (some #(re-find #"concurrent writers" %) @checks)
+            "and `git update-ref` was actually put under contention")))))
 
 (deftest cid-collision-is-rejected-without-changing-stored-bytes
   (with-repo

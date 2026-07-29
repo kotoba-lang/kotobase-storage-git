@@ -248,6 +248,14 @@
   storage/IBackendCapabilities
   (-capabilities [_]
     (conj storage/required-capabilities
+          ;; `git update-ref <ref> <new> <old>` is the compare-and-swap:
+          ;; git takes a lock file, verifies the old value, writes and
+          ;; fsyncs. The precondition is the store's, not this provider's,
+          ;; which is exactly what `:linearizable-ref` means. (Within one
+          ;; filesystem. Over NFS git's own locking caveats apply, and this
+          ;; provider inherits them rather than pretending to fix them --
+          ;; the README says the same.)
+          :linearizable-ref
           ;; Beyond the contract, and true rather than aspirational: every
           ;; published head is a commit in an append-only DAG, and fetch/push
           ;; replicate the whole store without any extra machinery.
