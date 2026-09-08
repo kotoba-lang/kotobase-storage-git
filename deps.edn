@@ -1,7 +1,12 @@
 {:paths ["src"]
  ;; git 本体以外に依存を持たない。ブロックも ref も git plumbing だけで表現でき、
  ;; JDBC ドライバや SDK に相当するものが要らない — これは git backend の性質。
- :deps {io.github.kotoba-lang/kotobase-storage
+ :deps {
+        ;; kotoba.lang.text, not clojure.string. Pinned as an explicit floor:
+        ;; tools.deps takes the NEWEST sha it is shown, so without a floor here
+        ;; this repo silently rides whatever a sibling happens to name.
+        io.github.kotoba-lang/text {:git/sha "73bdb13ae7a3d004b44bca08be03a3191157a38f"}
+       io.github.kotoba-lang/kotobase-storage
         {:git/url "https://github.com/kotoba-lang/kotobase-storage.git"
          :git/sha "b507198f4a27b71196d8b6e212451fe8edd3393e"}}
  :aliases
