@@ -115,7 +115,7 @@ backend can actually back rather than aspirations.
 ## Test
 
 ```sh
-clojure -M:test
+kbb -M:test
 ```
 
 Covers the shared `kotobase.storage.contract` suite, CID-collision refusal,
