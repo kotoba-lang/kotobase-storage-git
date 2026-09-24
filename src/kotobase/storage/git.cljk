@@ -48,7 +48,7 @@
   first, and the batching is a contained change behind this same protocol).
   Concurrency is safe within one filesystem; across NFS git's own locking
   caveats apply and this backend inherits them rather than fixing them."
-  (:require [clojure.java.io :as io]
+  (:require [kotoba.bytes :as kbytes] [clojure.java.io :as io]
             [clojure.java.shell :as shell]
             [kotoba.lang.text :as str]
             [kotobase.storage.core :as storage])
@@ -113,7 +113,7 @@
   [s]
   (if (re-matches #"[A-Za-z0-9][A-Za-z0-9._-]{0,250}" s)
     (str "b" s)
-    (str "x" (hex (.getBytes ^String s "UTF-8")))))
+    (str "x" (hex (kbytes/utf8-bytes ^String s)))))
 
 (defn- block-path
   "Two-character fan-out under the encoded name. Git trees are rewritten whole,
@@ -131,7 +131,7 @@
   and .lock hazards without needing to special-case them."
   [ref-name]
   (str ref-prefix
-       (str/join (for [b (.getBytes ^String ref-name "UTF-8")
+       (str/join (for [b (kbytes/utf8-bytes ^String ref-name)
                        :let [c (char (bit-and b 0xff))]]
                    (if (re-matches #"[A-Za-z0-9_-]" (str c))
                      (str c)
