@@ -1,5 +1,5 @@
 (ns kotobase.storage.git-test
-  (:require [clojure.java.shell :as shell]
+  (:require [kotoba.lang.error :as kerror] [clojure.java.shell :as shell]
             [kotoba.lang.text :as str]
             [kotoba.test :refer [deftest is testing]]
             [kotobase.engine :as engine]
@@ -48,7 +48,7 @@
     (fn [path]
       (let [backend (git/open {:path path})]
         (storage/put-block! backend "same-cid" (byte-array [1]))
-        (is (thrown-with-msg? clojure.lang.ExceptionInfo #"different bytes"
+        (is (thrown-with-msg? kerror/ExceptionInfo #"different bytes"
                               (storage/put-block! backend "same-cid" (byte-array [2]))))
         (is (= [1] (vec (storage/get-block backend "same-cid"))))))))
 
@@ -157,5 +157,5 @@
                 "each block batch is a commit an operator can read")))))))
 
 (deftest invalid-open-options-fail-closed
-  (is (thrown? clojure.lang.ExceptionInfo (git/open {})))
-  (is (thrown? clojure.lang.ExceptionInfo (git/open {:path "   "}))))
+  (is (thrown? kerror/ExceptionInfo (git/open {})))
+  (is (thrown? kerror/ExceptionInfo (git/open {:path "   "}))))
